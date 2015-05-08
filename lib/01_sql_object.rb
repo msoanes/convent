@@ -26,10 +26,6 @@ class SQLObject
       define_method("#{column}=") do |val|
         attributes[column] = val
       end
-
-      def attributes
-        @attributes ||= {}
-      end
     end
   end
 
@@ -80,11 +76,11 @@ class SQLObject
   end
 
   def attributes
-    # ...
+    @attributes ||= {}
   end
 
   def attribute_values
-    # ...
+    attributes.values
   end
 
   def insert
