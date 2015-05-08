@@ -54,7 +54,12 @@ class SQLObject
   end
 
   def initialize(params = {})
-    # ...
+    params.each do |attr_name, value|
+      unless self.class.columns.include?(attr_name)
+        raise "unknown attribute '#{attr_name}'"
+      end
+      attributes[attr_name] = value
+    end
   end
 
   def attributes
