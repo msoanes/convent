@@ -49,11 +49,7 @@ class SQLObject
       #{table_name}
     SQL
 
-    results.map! do |result|
-      new_result = {}
-      result.each { |col_name, value| new_result[col_name.to_sym] = value }
-      new_result
-    end
+
     parse_all(results)
   end
 
@@ -62,15 +58,24 @@ class SQLObject
   end
 
   def self.find(id)
-    # ...
+    parse_all(DBConnection.execute(<<-SQL, id: id)).first
+      SELECT
+        #{table_name}.*
+      FROM
+        #{table_name}
+      WHERE
+        id = :id
+      LIMIT
+        1
+    SQL
   end
 
   def initialize(params = {})
     params.each do |attr_name, value|
-      unless self.class.columns.include?(attr_name)
+      unless self.class.columns.include?(attr_name.to_sym)
         raise "unknown attribute '#{attr_name}'"
       end
-      attributes[attr_name] = value
+      attributes[attr_name.to_sym] = value
     end
   end
 
