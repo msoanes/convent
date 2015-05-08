@@ -5,7 +5,16 @@ require 'active_support/inflector'
 
 class SQLObject
   def self.columns
-    # ...
+    col_names, = DBConnection.execute2(<<-SQL)
+    SELECT
+      *
+    FROM
+      #{table_name}
+    LIMIT
+      0
+    SQL
+
+    col_names.map(&:to_sym)
   end
 
   def self.finalize!
@@ -16,7 +25,7 @@ class SQLObject
   end
 
   def self.table_name
-    @table_name || name.underscore.pluralize
+    @table_name || name.tableize
   end
 
   def self.all
