@@ -80,20 +80,29 @@ class SQLObject
   end
 
   def attribute_values
-    attributes.values
+    self.class.columns.map { |col| send(col) }
   end
 
   def insert
-    q_marks = (['?'] * attributes.length).join(',')
+    q_marks = (['?'] * self.class.columns.length).join(',')
     DBConnection.execute(<<-SQL, *attribute_values)
-      INSERT INTO #{self.class.table_name} (#{attributes.keys.join(',')})
+      INSERT INTO #{self.class.table_name} (#{self.class.columns.join(',')})
       VALUES (#{q_marks})
     SQL
-    id = DBConnection.last_insert_row_id
+    self.id = DBConnection.last_insert_row_id
   end
 
   def update
-    # ...
+    setters = self.class.columns.map { |col| "#{col} = ?" }
+    setters = setters.join(', ')
+    DBConnection.execute(<<-SQL, *(attribute_values + [id]))
+      UPDATE
+        #{self.class.table_name}
+      SET
+        #{setters}
+      WHERE
+        id = ?
+    SQL
   end
 
   def save
