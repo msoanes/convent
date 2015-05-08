@@ -71,7 +71,7 @@ class SQLObject
       unless self.class.columns.include?(attr_name.to_sym)
         raise "unknown attribute '#{attr_name}'"
       end
-      attributes[attr_name.to_sym] = value
+      send("#{attr_name}=", value)
     end
   end
 
@@ -84,7 +84,12 @@ class SQLObject
   end
 
   def insert
-    # ...
+    q_marks = (['?'] * attributes.length).join(',')
+    DBConnection.execute(<<-SQL, *attribute_values)
+      INSERT INTO #{self.class.table_name} (#{attributes.keys.join(',')})
+      VALUES (#{q_marks})
+    SQL
+    id = DBConnection.last_insert_row_id
   end
 
   def update
