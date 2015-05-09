@@ -45,7 +45,7 @@ class SQLObject
   end
 
   def self.parse_all(results)
-    results.map { |result| self.new(result) }
+    results.map { |result| new(result) }
   end
 
   def self.find(id)

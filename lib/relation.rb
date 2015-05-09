@@ -4,7 +4,7 @@ class Relation
 
     @query_hash = query_hash || {
       select: '*',
-      from: model_class.table_name,
+      from: model_class.table_name
     }
   end
 
@@ -66,35 +66,44 @@ class Relation
 
   def build_query
     query_components = [
-      select_part,
-      from_part,
-      where_part,
-      limit_part
-    ].join(" ")
+      select_string,
+      from_string,
+      join_string,
+      where_string,
+      group_string,
+      having_string,
+      limit_string,
+      offset_string,
+      order_string
+
+
+    query_components.compact.join(' ')
   end
 
-  def select_part
+  def select_string
     "SELECT #{@query_hash[:select]}"
   end
 
-  def from_part
+  def from_string
     "FROM #{@query_hash[:from]}"
   end
 
-  def where_part
-    return '' if @query_hash[:where].nil? || @query_hash[:where].empty?
+  def where_string
+    return nil if @query_hash[:where].nil? || @query_hash[:where].empty?
     where_line = @query_hash[:where].map { |k, _| "#{k} = ?" }.join(' AND ')
     "WHERE #{where_line}"
   end
 
-  def limit_part
-    return '' unless @query_hash.key?(:limit)
-    "LIMIT #{@query_hash[:limit]}"
+  def limit_string
+    return nil unless @query_hash.key?(:limit)
+    'LIMIT ?'
   end
 
   def params
     param_array = []
-    param_array += @query_hash[:where].values unless @query_hash[:where].nil?
+    param_array += @query_hash[:where].values || []
+    param_array += [@query_hash[:limit]] || []
+    param_array
   end
 
   def results
@@ -115,29 +124,17 @@ end
 class Hash
   def deep_dup
     new_hash = {}
-    self.each do |k, v|
-      begin
-        if k.respond_to?(:deep_dup)
-          k_dup = k.deep_dup
-        elsif k.respond_to?(:dup)
-          k_dup = k.dup
-        end
-      rescue TypeError
-        k_dup = k
-      end
-
-      begin
-        if v.respond_to?(:deep_dup)
-          v_dup = v.deep_dup
-        elsif v.respond_to?(:dup)
-          v_dup = v.dup
-        end
-      rescue TypeError
-        v_dup = v
-      end
-
-      new_hash[k_dup] = v_dup
-    end
+    each { |k, v| new_hash[Hash.dup(k)] = Hash.dup(v) }
     new_hash
+  end
+
+  def self.dup(element)
+    if element.respond_to?(:deep_dup)
+      element.deep_dup
+    else
+      element.dup
+    end
+  rescue TypeError
+    element
   end
 end
