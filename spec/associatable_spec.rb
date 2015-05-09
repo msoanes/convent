@@ -1,4 +1,4 @@
-require '03_associatable'
+require 'associatable'
 
 describe 'AssocOptions' do
   describe 'BelongsToOptions' do

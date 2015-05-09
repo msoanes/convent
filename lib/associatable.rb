@@ -1,6 +1,5 @@
 require 'active_support/inflector'
 
-# Phase IIIa
 class AssocOptions
   attr_accessor(
     :foreign_key,
@@ -31,7 +30,6 @@ class HasManyOptions < AssocOptions
     @primary_key = options[:primary_key] || :id
     @foreign_key = options[:foreign_key] ||
                    "#{self_class_name.underscore}_id".to_sym
-
   end
 end
 
