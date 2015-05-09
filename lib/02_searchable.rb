@@ -1,16 +1,16 @@
 require_relative 'db_connection'
+require_relative 'relation'
 
 module Searchable
-  def where(params)
-    where_string = params.keys.map { |col| "#{col} = ?" }.join(' AND ')
+  def all
+    Relation.new(self.name)
+  end
 
-    parse_all(DBConnection.execute(<<-SQL, *params.values))
-      SELECT
-        *
-      FROM
-        #{self.table_name}
-      WHERE
-        #{where_string}
-    SQL
+  def method_missing(method_name, *args)
+    if Relation.public_instance_methods.include?(method_name)
+      all.send(method_name, *args)
+    else
+      super
+    end
   end
 end

@@ -65,7 +65,7 @@ describe 'AssocOptions' do
       options = HasManyOptions.new('cats', 'Human')
       expect(options.model_class).to eq(Cat)
     end
-    
+
     it '#table_name returns table name of associated object' do
       options = BelongsToOptions.new('human')
       expect(options.table_name).to eq('humans')
@@ -159,7 +159,7 @@ describe 'Associatable' do
 
     it 'returns an empty array if no associated items' do
       catless_human = Human.find(4)
-      expect(catless_human.cats).to eq([])
+      expect(catless_human.cats.length).to eq(0)
     end
   end
 end
