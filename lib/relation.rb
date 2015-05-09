@@ -51,6 +51,7 @@ class Relation
   end
 
   def order
+    deep_dup.order!
   end
 
   def length
@@ -106,7 +107,37 @@ class Relation
   end
 
   def deep_dup
-    new_params = @query_hash.dup
+    new_params = @query_hash.deep_dup
     Relation.new(@class_name, new_params)
+  end
+end
+
+class Hash
+  def deep_dup
+    new_hash = {}
+    self.each do |k, v|
+      begin
+        if k.respond_to?(:deep_dup)
+          k_dup = k.deep_dup
+        elsif k.respond_to?(:dup)
+          k_dup = k.dup
+        end
+      rescue TypeError
+        k_dup = k
+      end
+
+      begin
+        if v.respond_to?(:deep_dup)
+          v_dup = v.deep_dup
+        elsif v.respond_to?(:dup)
+          v_dup = v.dup
+        end
+      rescue TypeError
+        v_dup = v
+      end
+
+      new_hash[k_dup] = v_dup
+    end
+    new_hash
   end
 end
