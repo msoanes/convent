@@ -8,7 +8,7 @@ module Searchable
       SELECT
         *
       FROM
-        #{self.table_name}
+        #{table_name}
       WHERE
         #{where_string}
     SQL

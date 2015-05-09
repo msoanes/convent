@@ -3,10 +3,6 @@ require 'active_support/inflector'
 require_relative '02_searchable'
 require_relative '03_associatable'
 
-
-# NB: the attr_accessor we wrote in phase 0 is NOT used in the rest
-# of this project. It was only a warm up.
-
 class SQLObject
   extend Searchable
   extend Associatable
@@ -52,12 +48,11 @@ class SQLObject
       #{table_name}
     SQL
 
-
     parse_all(results)
   end
 
   def self.parse_all(results)
-    results.map { |result| self.new(result) }
+    results.map { |result| new(result) }
   end
 
   def self.find(id)
