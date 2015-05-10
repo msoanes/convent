@@ -111,6 +111,11 @@ describe Relation do
       expect(two_selected.first.owner_id).to be_nil
     end
 
+    it 'specifies tables' do
+      one_selected = relation.selects(cats: :owner_id)
+      expect(one_selected.first.owner_id).to_not be_nil
+    end
+
     it 'does not modify the previous relation when stacked' do
       one_filtered = relation.selects(:owner_id)
       two_filtered = one_filtered.selects(:name)
@@ -164,11 +169,21 @@ describe Relation do
     end
 
     it 'joins a belongs_to association' do
-      expect(relation.joins(:human).all? { |cat| !cat.owner_id.nil? }).to be_true
+      cat_joins_human = relation.joins(:human)
+      expect(cat_joins_human.length).to eq()
+      expect(cat_joins_human.all? { |cat| !cat.owner_id.nil? }).to be_true
     end
 
     it 'joins a has_many association' do
-      expect(human_relation.joins(:house).all? { |human| !human.house_id.nil? }).to be_true
+      human_joins_house = human_relation.joins(:house)
+      expect(human_joins_house.all? { |human| !human.house_id.nil? }).to be_true
+    end
+
+    it 'joins multiple associations' do
+      # human_joins = human_relation
+      #               .joins(:house, :cats)
+      #               .selects(cat: :name, house: :address)
+      # expect(human_joins.)
     end
 
     it 'joins single-level nested associations' do
