@@ -1,6 +1,26 @@
 require_relative 'queriable'
 
 class Relation
+
+  def self.dup_hash(hsh)
+    result = {}
+    hsh.each do |key, val|
+      result[gen_dup(key)] = gen_dup(val)
+    end
+
+    result
+  end
+
+  def self.gen_dup(item)
+    if item.is_a?(Hash)
+      dup_hash(item)
+    else
+      item.dup
+    end
+  rescue
+    item
+  end
+
   def initialize(class_name, query_hash = nil)
     @class_name = class_name
     @query_hash = query_hash || {
@@ -14,7 +34,7 @@ class Relation
   end
 
   def where(params)
-    where!(params)
+    deep_dup.where!(params)
   end
 
   def where!(params)
@@ -39,5 +59,9 @@ class Relation
 
   def execute_query
     class_model.parse_all(DBConnection.execute(build_query, params))
+  end
+
+  def deep_dup
+    Relation.new(@class_name, self.class.dup_hash(@query_hash))
   end
 end
