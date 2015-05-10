@@ -41,11 +41,7 @@ class Relation
   end
 
   def selects!(*params)
-    if @query_hash[:select].nil?
-      @query_hash[:select] = params
-    else
-      @query_hash[:select] += params
-    end
+    @query_hash[:select] = params
 
     self
   end
