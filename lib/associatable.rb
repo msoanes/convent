@@ -43,6 +43,8 @@ module Associatable
       id = send(options.foreign_key)
       options.model_class.where(options.primary_key => id).first
     end
+
+    instance_variable_set("@#{name}_options", options)
   end
 
   def has_many(name, options = {})
@@ -52,6 +54,8 @@ module Associatable
       id = send(options.primary_key)
       options.model_class.where(options.foreign_key => id)
     end
+
+    instance_variable_set("@#{name}_options", options)
   end
 
   def has_one_through(name, through_name, source_name)
