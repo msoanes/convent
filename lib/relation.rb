@@ -13,6 +13,19 @@ class Relation
     [].methods.include?(name) ? results.send(name, *args) : super
   end
 
+  def where(params)
+    where!(params)
+  end
+
+  def where!(params)
+    @query_hash[:where] ||= {}
+    params.each do |column, value|
+      @query_hash[:where][column] = value
+    end
+
+    self
+  end
+
   private
   include Queriable
 

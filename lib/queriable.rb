@@ -5,6 +5,8 @@ module Queriable
   end
 
   def params
+    return nil if @query_hash[:where].nil? || @query_hash[:where].empty?
+    @query_hash[:where].values 
   end
 
   def select_line
@@ -13,5 +15,11 @@ module Queriable
 
   def from_line
     "FROM #{@query_hash[:from]}"
+  end
+
+  def where_line
+    return nil if @query_hash[:where].nil? || @query_hash[:where].empty?
+    conditions = @query_hash[:where].keys.map { |col| "#{col} = ?" }
+    "WHERE #{conditions.join(' AND ')}"
   end
 end
