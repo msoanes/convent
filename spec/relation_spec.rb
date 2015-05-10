@@ -170,13 +170,15 @@ describe Relation do
 
     it 'joins a belongs_to association' do
       cat_joins_human = relation.joins(:human)
-      expect(cat_joins_human.length).to eq()
-      expect(cat_joins_human.all? { |cat| !cat.owner_id.nil? }).to be_true
+      expect(cat_joins_human.length).to eq(4)
+      expect(cat_joins_human.all? { |cat| !cat.owner_id.nil? }).to be true
     end
 
     it 'joins a has_many association' do
       human_joins_house = human_relation.joins(:house)
-      expect(human_joins_house.all? { |human| !human.house_id.nil? }).to be_true
+
+      expect(human_joins_house.length).to eq(3)
+      expect(human_joins_house.all? { |human| !human.house_id.nil? }).to be true
     end
 
     it 'joins multiple associations' do
