@@ -96,11 +96,30 @@ describe Relation do
     end
 
     it 'does not modify the previous relation when stacked' do
-      one_filtered = relation.selects(:owner_id)
-      two_filtered = one_filtered.limit(3)
+      one_limited = relation.selects(:owner_id)
+      two_limited = one_limited.limit(3)
 
-      expect(one_filtered.length).to eq(5)
-      expect(two_filtered.length).to eq(3)
+      expect(one_limited.length).to eq(5)
+      expect(two_limited.length).to eq(3)
+    end
+  end
+
+  describe '#offset' do
+    it 'returns a new relation' do
+      expect(relation.limit(1).offset(3).class).to eq (Relation)
+    end
+
+    it 'skips results' do
+      offset_relation = relation.limit(1).offset(3)
+      expect(offset_relation.first.id).to eq(4)
+    end
+
+    it 'does not modify the previous relation when stacked' do
+      one_offset = relation.selects(:owner_id)
+      two_offset = one_offset.offset(3).limit(10)
+
+      expect(one_offset.length).to eq(5)
+      expect(two_offset.length).to eq(2)
     end
   end
 end
