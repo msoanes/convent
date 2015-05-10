@@ -41,12 +41,14 @@ describe Relation do
 
     it 'filters the results' do
       filtered_relation = relation.where(owner_id: 3)
+      
       expect(filtered_relation.length).to eq(2)
     end
 
     it 'can be stacked' do
       filtered_relation = relation.where(owner_id: 3)
       filtered_relation = filtered_relation.where(name: 'Breakfast')
+
       expect(filtered_relation.length).to eq(0)
     end
 
