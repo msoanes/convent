@@ -6,7 +6,7 @@ module Queriable
 
   def params
     return nil if @query_hash[:where].nil? || @query_hash[:where].empty?
-    @query_hash[:where].values 
+    condition_params(:where)
   end
 
   def select_line
@@ -19,7 +19,34 @@ module Queriable
 
   def where_line
     return nil if @query_hash[:where].nil? || @query_hash[:where].empty?
-    conditions = @query_hash[:where].keys.map { |col| "#{col} = ?" }
-    "WHERE #{conditions.join(' AND ')}"
+
+    condition_string = conditions(:where).flatten.join(' AND ')
+    "WHERE #{condition_string}"
+  end
+
+  def conditions(line_sym)
+    cond_arr = []
+    @query_hash[line_sym].each do |key, value|
+      if value.is_a?(Hash)
+        value.each do |col, val|
+          cond_arr << "#{key}.#{col} = ?"
+        end
+      else
+        cond_arr << "#{key} = ?"
+      end
+    end
+    cond_arr
+  end
+
+  def condition_params(line_sym)
+    param_array = []
+    @query_hash[line_sym].values.each do |val|
+      if val.is_a?(Hash)
+        param_array += val.values
+      else
+        param_array << val
+      end
+    end
+    param_array
   end
 end
