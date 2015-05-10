@@ -122,4 +122,27 @@ describe Relation do
       expect(two_offset.length).to eq(2)
     end
   end
+
+  describe '#joins' do
+    it 'returns a new relation' do
+    end
+
+    it 'joins a single association' do
+    end
+
+    it 'joins multiple associations' do
+    end
+
+    it 'joins single-level nested associations' do
+    end
+
+    it 'joins multiple-level nested associations' do
+    end
+
+    it 'can be stacked' do
+    end
+
+    it 'does not modify the previous relation when stacked' do
+    end
+  end
 end
