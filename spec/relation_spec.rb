@@ -3,11 +3,29 @@ require 'spec_helper'
 describe Relation do
   before(:all) do
     class Cat < SQLObject
+      belongs_to :human, foreign_key: :owner_id
+
+      finalize!
+    end
+
+    class Human < SQLObject
+      self.table_name = 'humans'
+
+      has_many :cats, foreign_key: :owner_id
+      belongs_to :house
+
+      finalize!
+    end
+
+    class House < SQLObject
+      has_many :humans
+
       finalize!
     end
   end
 
   let(:query_hash) { { select: '*', from: 'cats', where: { id: 1 } } }
+  let(:human_relation) { Relation.new('Human') }
   subject(:relation) { Relation.new('Cat') }
 
   describe '::new' do
@@ -35,7 +53,7 @@ describe Relation do
 
   describe '#where' do
     it 'returns a new relation' do
-      expect(relation.where(id: 1).class).to eq (Relation)
+      expect(relation.where(id: 1).class).to eq(Relation)
     end
 
     it 'filters the results' do
@@ -66,7 +84,7 @@ describe Relation do
 
   describe '#selects' do
     it 'returns a new relation' do
-      expect(relation.selects(:owner_id).class).to eq (Relation)
+      expect(relation.selects(:owner_id).class).to eq(Relation)
     end
 
     it 'describes columns to select' do
@@ -86,7 +104,7 @@ describe Relation do
 
   describe '#limit' do
     it 'returns a new relation' do
-      expect(relation.limit(3).class).to eq (Relation)
+      expect(relation.limit(3).class).to eq(Relation)
     end
 
     it 'limits the output' do
@@ -105,7 +123,7 @@ describe Relation do
 
   describe '#offset' do
     it 'returns a new relation' do
-      expect(relation.limit(1).offset(3).class).to eq (Relation)
+      expect(relation.limit(1).offset(3).class).to eq(Relation)
     end
 
     it 'skips results' do
@@ -124,12 +142,15 @@ describe Relation do
 
   describe '#joins' do
     it 'returns a new relation' do
+      expect(relation.joins(:human).class).to eq(Relation)
     end
 
-    it 'joins a single association' do
+    it 'joins a belongs_to association' do
+      expect(relation.joins(:human).all? { |cat| !cat.owner_id.nil? }).to be_true
     end
 
-    it 'joins multiple associations' do
+    it 'joins a has_many association' do
+      expect(human_relation.joins(:house).all? { |human| !human.house_id.nil? }).to be_true
     end
 
     it 'joins single-level nested associations' do
