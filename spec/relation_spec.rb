@@ -87,10 +87,28 @@ describe Relation do
       expect(relation.selects(:owner_id).class).to eq(Relation)
     end
 
-    it 'describes columns to select' do
+    it 'sets a single column to select' do
       selected_relation = relation.selects(:owner_id)
-      expect(selected_relation.first.owner_id).to eq(1)
       expect(selected_relation.first.name).to be_nil
+    end
+
+    it 'sets multiple columns to select' do
+      selected_relation = relation.selects(:owner_id, :name)
+      expect(selected_relation.first.name).to eq('Breakfast')
+      expect(selected_relation.first.owner_id).to eq(1)
+
+      expect(selected_relation.first.id).to be_nil
+    end
+
+    it 'overwrites previous selections' do
+      one_selected = relation.selects(:owner_id)
+      two_selected = one_selected.selects(:name)
+
+      expect(one_selected.first.name).to be_nil
+      expect(one_selected.first.owner_id).to_not be_nil
+
+      expect(two_selected.first.name).to_not be_nil
+      expect(two_selected.first.owner_id).to be_nil
     end
 
     it 'does not modify the previous relation when stacked' do
