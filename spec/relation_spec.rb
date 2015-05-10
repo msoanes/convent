@@ -71,9 +71,9 @@ describe Relation do
     end
 
     it 'describes columns to select' do
-      selected_relation = relation.selects(:owner_id).first
-      expect(selected_relation.owner_id).to eq(1)
-      expect(selected_relation.name).to be_nil
+      selected_relation = relation.selects(:owner_id)
+      expect(selected_relation.first.owner_id).to eq(1)
+      expect(selected_relation.first.name).to be_nil
     end
 
     it 'does not modify the previous relation when stacked' do
@@ -82,6 +82,25 @@ describe Relation do
 
       expect(one_filtered.first.name).to be_nil
       expect(two_filtered.first.name).to_not be_nil
+    end
+  end
+
+  describe '#limit' do
+    it 'returns a new relation' do
+      expect(relation.limit(3).class).to eq (Relation)
+    end
+
+    it 'limits the output' do
+      selected_relation = relation.limit(3)
+      expect(selected_relation.length).to eq(3)
+    end
+
+    it 'does not modify the previous relation when stacked' do
+      one_filtered = relation.selects(:owner_id)
+      two_filtered = one_filtered.limit(3)
+
+      expect(one_filtered.length).to eq(5)
+      expect(two_filtered.length).to eq(3)
     end
   end
 end
