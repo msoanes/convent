@@ -14,9 +14,17 @@ module Queriable
 
   def select_line
     if @query_hash[:select].nil?
-      selected_cols = '*'
+      selected_cols = "#{class_model.table_name}.*"
     else
-      selected_cols = @query_hash[:select].map(&:to_s).join(', ')
+      selected_cols_arr = []
+      @query_hash[:select].each do |column|
+        unless column.is_a?(Hash)
+          selected_cols_arr << "#{column}"
+        else
+          selected_cols_arr += column.map { |table, col| "#{table}.#{col}" }
+        end
+      end
+      selected_cols = selected_cols_arr.join(', ')
     end
     "SELECT #{selected_cols}"
   end
