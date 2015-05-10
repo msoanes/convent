@@ -64,4 +64,24 @@ describe Relation do
       expect(relation.where(cats: { owner_id: 3}).length).to eq(2)
     end
   end
+
+  describe '#selects' do
+    it 'returns a new relation' do
+      expect(relation.selects(:owner_id).class).to eq (Relation)
+    end
+
+    it 'describes columns to select' do
+      selected_relation = relation.selects(:owner_id).first
+      expect(selected_relation.owner_id).to eq(1)
+      expect(selected_relation.name).to be_nil
+    end
+
+    it 'does not modify the previous relation when stacked' do
+      one_filtered = relation.selects(:owner_id)
+      two_filtered = one_filtered.selects(:name)
+
+      expect(one_filtered.first.name).to be_nil
+      expect(two_filtered.first.name).to_not be_nil
+    end
+  end
 end
