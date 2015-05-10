@@ -35,5 +35,27 @@ describe Relation do
   end
 
   describe '#where' do
+    it 'returns a new relation' do
+      expect(relation.where(id: 1).class).to eq (Relation)
+    end
+
+    it 'filters the results' do
+      filtered_relation = relation.where(owner_id: 3)
+      expect(filtered_relation.length).to eq(2)
+    end
+
+    it 'can be stacked' do
+      filtered_relation = relation.where(owner_id: 3)
+      filtered_relation = filtered_relation.where(name: 'Breakfast')
+      expect(filtered_relation.length).to eq(0)
+    end
+
+    it 'does not modify the previous relation when stacked' do
+      one_filtered = relation.where(owner_id: 3)
+      two_filtered = one_filtered.where(name: 'Breakfast')
+
+      expect(one_filtered.length).to eq(2)
+      expect(two_filtered.length).to eq(0)
+    end
   end
 end
