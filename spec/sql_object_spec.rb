@@ -1,5 +1,4 @@
-require 'sql_object'
-require 'securerandom'
+require 'spec_helper'
 
 describe SQLObject do
   before(:each) { DBConnection.reset }

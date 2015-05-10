@@ -1,5 +1,4 @@
-require 'relation'
-require 'sql_object'
+require 'spec_helper'
 
 describe Relation do
   before(:all) do
