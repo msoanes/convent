@@ -5,8 +5,10 @@ module Queriable
   end
 
   def params
-    return nil if @query_hash[:where].nil? || @query_hash[:where].empty?
-    condition_params(:where)
+    param_arr = []
+    param_arr += condition_params(:where) unless @query_hash[:where].nil?
+    param_arr << @query_hash[:limit] unless @query_hash[:limit].nil?
+    param_arr
   end
 
   def select_line
@@ -27,6 +29,10 @@ module Queriable
 
     condition_string = conditions(:where).flatten.join(' AND ')
     "WHERE #{condition_string}"
+  end
+
+  def limit_line
+    "LIMIT ?" unless @query_hash[:limit].nil?
   end
 
   def conditions(line_sym)

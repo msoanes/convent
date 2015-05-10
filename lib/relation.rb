@@ -25,7 +25,9 @@ class Relation
     @class_name = class_name
     @query_hash = query_hash || {
       select: nil,
-      from: class_model.table_name
+      from: class_model.table_name,
+      where: nil,
+      limit: nil
     }
   end
 
@@ -56,6 +58,16 @@ class Relation
     params.each do |column, value|
       @query_hash[:where][column] = value
     end
+
+    self
+  end
+
+  def limit(num)
+    deep_dup.limit!(num)
+  end
+
+  def limit!(num)
+    @query_hash[:limit] = num
 
     self
   end
