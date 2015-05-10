@@ -27,6 +27,7 @@ class Relation
       select: nil,
       from: class_model.table_name,
       where: nil,
+      join: nil,
       limit: nil,
       offset: nil
     }
@@ -43,6 +44,16 @@ class Relation
   def selects!(*params)
     @query_hash[:select] = params
 
+    self
+  end
+
+  def joins(*assocs)
+    deep_dup.joins!(*assocs)
+  end
+
+  def joins!(*assocs)
+    @query_hash[:join] ||= []
+    @query_hash[:join] += assocs
     self
   end
 
