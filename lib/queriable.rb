@@ -8,6 +8,7 @@ module Queriable
     param_arr = []
     param_arr += condition_params(:where) unless @query_hash[:where].nil?
     param_arr << @query_hash[:limit] unless @query_hash[:limit].nil?
+    param_arr << @query_hash[:offset] unless @query_hash[:offset].nil?
     param_arr
   end
 
@@ -33,6 +34,10 @@ module Queriable
 
   def limit_line
     "LIMIT ?" unless @query_hash[:limit].nil?
+  end
+
+  def offset_line
+    "OFFSET ?" unless @query_hash[:offset].nil? || @query_hash[:limit].nil?
   end
 
   def conditions(line_sym)

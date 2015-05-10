@@ -27,7 +27,8 @@ class Relation
       select: nil,
       from: class_model.table_name,
       where: nil,
-      limit: nil
+      limit: nil,
+      offset: nil
     }
   end
 
@@ -68,6 +69,16 @@ class Relation
 
   def limit!(num)
     @query_hash[:limit] = num
+
+    self
+  end
+
+  def offset(num)
+    deep_dup.offset!(num)
+  end
+
+  def offset!(num)
+    @query_hash[:offset] = num
 
     self
   end
