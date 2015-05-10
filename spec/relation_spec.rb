@@ -41,7 +41,7 @@ describe Relation do
 
     it 'filters the results' do
       filtered_relation = relation.where(owner_id: 3)
-      
+
       expect(filtered_relation.length).to eq(2)
     end
 
@@ -58,6 +58,10 @@ describe Relation do
 
       expect(one_filtered.length).to eq(2)
       expect(two_filtered.length).to eq(0)
+    end
+
+    it 'lets tables be specified' do
+      expect(relation.where(cats: { owner_id: 3}).length).to eq(2)
     end
   end
 end
