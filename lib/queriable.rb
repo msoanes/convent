@@ -10,7 +10,12 @@ module Queriable
   end
 
   def select_line
-    "SELECT #{@query_hash[:select]}"
+    if @query_hash[:select].nil?
+      selected_cols = '*'
+    else
+      selected_cols = @query_hash[:select].map(&:to_s).join(', ')
+    end
+    "SELECT #{selected_cols}"
   end
 
   def from_line

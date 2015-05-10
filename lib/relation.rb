@@ -24,13 +24,27 @@ class Relation
   def initialize(class_name, query_hash = nil)
     @class_name = class_name
     @query_hash = query_hash || {
-      select: '*',
+      select: nil,
       from: class_model.table_name
     }
   end
 
   def method_missing(name, *args)
     [].methods.include?(name) ? results.send(name, *args) : super
+  end
+
+  def selects(*params)
+    deep_dup.selects!(*params)
+  end
+
+  def selects!(*params)
+    if @query_hash[:select].nil?
+      @query_hash[:select] = params
+    else
+      @query_hash[:select] += params
+    end
+
+    self
   end
 
   def where(params)
