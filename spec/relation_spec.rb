@@ -182,10 +182,10 @@ describe Relation do
     end
 
     it 'joins multiple associations' do
-      # human_joins = human_relation
-      #               .joins(:house, :cats)
-      #               .selects(cat: :name, house: :address)
-      # expect(human_joins.)
+      human_joins = human_relation
+                    .joins(:house, :cats)
+                    .selects(cats: :name, houses: :address)
+      p human_joins[0..-1]
     end
 
     it 'joins single-level nested associations' do

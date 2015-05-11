@@ -50,11 +50,9 @@ module Queriable
 
   def join_line
     return nil if @query_hash[:join].nil?
-    joins_arr = []
-    @query_hash[:join].each do |assoc|
+    joins_arr = @query_hash[:join].map do |assoc|
       options = class_model.instance_variable_get("@#{assoc}_options")
-      assoc_table = options.table_name
-      local_table = class_model.table_name
+      assoc_table, local_table = options.table_name, class_model.table_name
 
       if options.class.name == 'BelongsToOptions'
         assoc_key, local_key = options.primary_key, options.foreign_key
@@ -63,7 +61,7 @@ module Queriable
       end
       join_str = "JOIN #{assoc_table} ON "
       join_str << "#{local_table}.#{local_key} = #{assoc_table}.#{assoc_key}"
-      joins_arr << join_str
+      join_str
     end
     joins_arr
   end

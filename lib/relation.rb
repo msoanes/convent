@@ -1,7 +1,6 @@
 require_relative 'queriable'
 
 class Relation
-
   def self.dup_hash(hsh)
     result = {}
     hsh.each do |key, val|
