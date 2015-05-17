@@ -32,8 +32,8 @@ class Relation
     }
   end
 
-  def method_missing(name, *args)
-    [].methods.include?(name) ? results.send(name, *args) : super
+  def method_missing(name, *args, &blk)
+    [].methods.include?(name) ? results.send(name, *args, &blk) : super
   end
 
   def selects(*params)
