@@ -45,6 +45,11 @@ describe Relation do
       expect(relation.length).to eq(5)
     end
 
+    it 'can accept array methods with blocks' do
+      cat_names = ['Breakfast', 'Earl', 'Haskell', 'Markov', 'Stray Cat']
+      expect(relation.map { |cat| cat.name }).to eq(cat_names)
+    end
+
     it 'has elements of the correct type' do
       expect(relation.first).to be_a(SQLObject)
       expect(relation.first.class.name).to eq('Cat')
