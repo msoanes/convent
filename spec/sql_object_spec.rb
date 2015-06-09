@@ -162,4 +162,13 @@ describe SQLObject do
       human.save
     end
   end
+
+  describe '#delete' do
+    it '#delete removes the record from the database' do
+      human = Human.find(1)
+      human.delete
+      expect(Human.find(1)).to be_nil
+    end
+
+  end
 end

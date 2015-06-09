@@ -1,7 +1,7 @@
 module Queriable
   def build_query
     components = @query_hash.keys.map { |component| send("#{component}_line") }
-    components.compact.join(' ')
+    components.flatten.compact.join(' ')
   end
 
   def params
@@ -16,7 +16,15 @@ module Queriable
     if @query_hash[:select].nil?
       selected_cols = "#{class_model.table_name}.*"
     else
-      selected_cols = @query_hash[:select].map(&:to_s).join(', ')
+      selected_cols_arr = []
+      @query_hash[:select].each do |column|
+        unless column.is_a?(Hash)
+          selected_cols_arr << "#{column}"
+        else
+          selected_cols_arr += column.map { |table, col| "#{table}.#{col}" }
+        end
+      end
+      selected_cols = selected_cols_arr.join(', ')
     end
     "SELECT #{selected_cols}"
   end
@@ -38,6 +46,24 @@ module Queriable
 
   def offset_line
     'OFFSET ?' unless @query_hash[:offset].nil? || @query_hash[:limit].nil?
+  end
+
+  def join_line
+    return nil if @query_hash[:join].nil?
+    joins_arr = @query_hash[:join].map do |assoc|
+      options = class_model.instance_variable_get("@#{assoc}_options")
+      assoc_table, local_table = options.table_name, class_model.table_name
+
+      if options.class.name == 'BelongsToOptions'
+        assoc_key, local_key = options.primary_key, options.foreign_key
+      else
+        assoc_key, local_key = options.foreign_key, options.primary_key
+      end
+      join_str = "JOIN #{assoc_table} ON "
+      join_str << "#{local_table}.#{local_key} = #{assoc_table}.#{assoc_key}"
+      join_str
+    end
+    joins_arr
   end
 
   def conditions(line_sym)

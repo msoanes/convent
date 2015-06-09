@@ -1,7 +1,6 @@
 require_relative 'queriable'
 
 class Relation
-
   def self.dup_hash(hsh)
     result = {}
     hsh.each do |key, val|
@@ -27,13 +26,14 @@ class Relation
       select: nil,
       from: class_model.table_name,
       where: nil,
+      join: nil,
       limit: nil,
       offset: nil
     }
   end
 
-  def method_missing(name, *args)
-    [].methods.include?(name) ? results.send(name, *args) : super
+  def method_missing(name, *args, &blk)
+    [].methods.include?(name) ? results.send(name, *args, &blk) : super
   end
 
   def selects(*params)
@@ -41,12 +41,18 @@ class Relation
   end
 
   def selects!(*params)
-    if @query_hash[:select].nil?
-      @query_hash[:select] = params
-    else
-      @query_hash[:select] += params
-    end
+    @query_hash[:select] = params
 
+    self
+  end
+
+  def joins(*assocs)
+    deep_dup.joins!(*assocs)
+  end
+
+  def joins!(*assocs)
+    @query_hash[:join] ||= []
+    @query_hash[:join] += assocs
     self
   end
 

@@ -45,6 +45,11 @@ describe Relation do
       expect(relation.length).to eq(5)
     end
 
+    it 'can accept array methods with blocks' do
+      cat_names = ['Breakfast', 'Earl', 'Haskell', 'Markov', 'Stray Cat']
+      expect(relation.map { |cat| cat.name }).to eq(cat_names)
+    end
+
     it 'has elements of the correct type' do
       expect(relation.first).to be_a(SQLObject)
       expect(relation.first.class.name).to eq('Cat')
@@ -87,12 +92,12 @@ describe Relation do
       expect(relation.selects(:owner_id).class).to eq(Relation)
     end
 
-    it 'describes columns to select' do
+    it 'sets a single column to select' do
       selected_relation = relation.selects(:owner_id)
-      expect(selected_relation.first.owner_id).to eq(1)
       expect(selected_relation.first.name).to be_nil
     end
 
+<<<<<<< HEAD
     it 'specifies tables' do
       selected_relation = relations.selects(cats: :owner_id)
       expect(selected_relation.first.owner_id).to eq(1)
@@ -104,6 +109,30 @@ describe Relation do
       expect(selected_relation.first.owner_id).to eq(1)
       expect(selected_relation.first.id).to eq(1)
       expect(selected_relation.first.name).to be_nil
+=======
+    it 'sets multiple columns to select' do
+      selected_relation = relation.selects(:owner_id, :name)
+      expect(selected_relation.first.name).to eq('Breakfast')
+      expect(selected_relation.first.owner_id).to eq(1)
+
+      expect(selected_relation.first.id).to be_nil
+    end
+
+    it 'overwrites previous selections' do
+      one_selected = relation.selects(:owner_id)
+      two_selected = one_selected.selects(:name)
+
+      expect(one_selected.first.name).to be_nil
+      expect(one_selected.first.owner_id).to_not be_nil
+
+      expect(two_selected.first.name).to_not be_nil
+      expect(two_selected.first.owner_id).to be_nil
+    end
+
+    it 'specifies tables' do
+      one_selected = relation.selects(cats: :owner_id)
+      expect(one_selected.first.owner_id).to_not be_nil
+>>>>>>> 726fb918a76c0523a7e3bc4410e6af7c0d4e11a0
     end
 
     it 'does not modify the previous relation when stacked' do
@@ -159,6 +188,7 @@ describe Relation do
     end
 
     it 'joins a belongs_to association' do
+<<<<<<< HEAD
       joins_relation = relation.joins(:human)
       expect(joins_relation.length).to eq(4)
       expect(joins_relation.all? { |cat| !cat.owner_id.nil? }).to be_true
@@ -175,6 +205,25 @@ describe Relation do
                        .joins(:house, :cat)
                        .selects(house: :address, cat: :name)
       expect(joins_relation)
+=======
+      cat_joins_human = relation.joins(:human)
+      expect(cat_joins_human.length).to eq(4)
+      expect(cat_joins_human.all? { |cat| !cat.owner_id.nil? }).to be true
+    end
+
+    it 'joins a has_many association' do
+      human_joins_house = human_relation.joins(:house)
+
+      expect(human_joins_house.length).to eq(3)
+      expect(human_joins_house.all? { |human| !human.house_id.nil? }).to be true
+    end
+
+    it 'joins multiple associations' do
+      human_joins = human_relation
+                    .joins(:house, :cats)
+                    .selects(cats: :name, houses: :address)
+      p human_joins[0..-1]
+>>>>>>> 726fb918a76c0523a7e3bc4410e6af7c0d4e11a0
     end
 
     it 'joins single-level nested associations' do
