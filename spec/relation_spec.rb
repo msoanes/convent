@@ -78,7 +78,7 @@ describe Relation do
     end
 
     it 'lets tables be specified' do
-      expect(relation.where(cats: { owner_id: 3}).length).to eq(2)
+      expect(relation.where(cats: { owner_id: 3 }).length).to eq(2)
     end
   end
 
@@ -90,6 +90,19 @@ describe Relation do
     it 'describes columns to select' do
       selected_relation = relation.selects(:owner_id)
       expect(selected_relation.first.owner_id).to eq(1)
+      expect(selected_relation.first.name).to be_nil
+    end
+
+    it 'specifies tables' do
+      selected_relation = relations.selects(cats: :owner_id)
+      expect(selected_relation.first.owner_id).to eq(1)
+      expect(selected_relation.first.name).to be_nil
+    end
+
+    it 'specifies multiple columns from a table' do
+      selected_relation = relations.selects(cats: [:owner_id, :id])
+      expect(selected_relation.first.owner_id).to eq(1)
+      expect(selected_relation.first.id).to eq(1)
       expect(selected_relation.first.name).to be_nil
     end
 
@@ -146,14 +159,26 @@ describe Relation do
     end
 
     it 'joins a belongs_to association' do
-      expect(relation.joins(:human).all? { |cat| !cat.owner_id.nil? }).to be_true
+      joins_relation = relation.joins(:human)
+      expect(joins_relation.length).to eq(4)
+      expect(joins_relation.all? { |cat| !cat.owner_id.nil? }).to be_true
     end
 
     it 'joins a has_many association' do
-      expect(human_relation.joins(:house).all? { |human| !human.house_id.nil? }).to be_true
+      joins_relation = human_relation.joins(:house)
+      expect(joins_relation.length).to eq(4)
+      expect(joins_relation.all? { |human| !human.house_id.nil? }).to be_true
+    end
+
+    it 'joins multiple associations' do
+      joins_relation = human_relation
+                       .joins(:house, :cat)
+                       .selects(house: :address, cat: :name)
+      expect(joins_relation)
     end
 
     it 'joins single-level nested associations' do
+      joins_relation = relation.joins(:human)
     end
 
     it 'joins multiple-level nested associations' do

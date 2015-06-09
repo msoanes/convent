@@ -14,7 +14,7 @@ module Queriable
 
   def select_line
     if @query_hash[:select].nil?
-      selected_cols = '*'
+      selected_cols = "#{class_model.table_name}.*"
     else
       selected_cols = @query_hash[:select].map(&:to_s).join(', ')
     end
@@ -33,24 +33,23 @@ module Queriable
   end
 
   def limit_line
-    "LIMIT ?" unless @query_hash[:limit].nil?
+    'LIMIT ?' unless @query_hash[:limit].nil?
   end
 
   def offset_line
-    "OFFSET ?" unless @query_hash[:offset].nil? || @query_hash[:limit].nil?
+    'OFFSET ?' unless @query_hash[:offset].nil? || @query_hash[:limit].nil?
   end
 
   def conditions(line_sym)
     cond_arr = []
     @query_hash[line_sym].each do |key, value|
       if value.is_a?(Hash)
-        value.each do |col, val|
-          cond_arr << "#{key}.#{col} = ?"
-        end
+        value.each { |col, _| cond_arr << "#{key}.#{col} = ?" }
       else
         cond_arr << "#{key} = ?"
       end
     end
+
     cond_arr
   end
 

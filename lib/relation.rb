@@ -84,6 +84,7 @@ class Relation
   end
 
   private
+
   include Queriable
 
   def class_model
